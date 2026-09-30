@@ -1,22 +1,22 @@
-# Troubleshooting: ReferenceGrant y ResolvedRefs
+# Troubleshooting: ReferenceGrant and ResolvedRefs
 
-Un compañero creó la ruta `bakery` (namespace `cafe`) para publicar el servicio `bread` del namespace
-`bakery` en `http://bakery.example`, pero **no funciona**:
+A teammate created the `bakery` route (namespace `cafe`) to publish the `bread` service from the
+`bakery` namespace at `http://bakery.example`, but **it doesn't work**:
 
 ```bash
 curl -s -o /dev/null -w "%{http_code}\n" -H "Host: bakery.example" http://$NODE_IP:30080/
 ```{{exec}}
 
-### Tarea
+### Task
 
-Haz que `curl -H "Host: bakery.example" http://$NODE_IP:30080/` devuelva **200** con la respuesta del
-pod `bread`. **No** muevas la ruta de namespace ni cambies el Service `bread`.
+Make `curl -H "Host: bakery.example" http://$NODE_IP:30080/` return **200** with the response from
+the `bread` pod. Do **not** move the route to another namespace or change the `bread` Service.
 
-### Metodología
+### Method
 
-1. ¿La ruta está aceptada por el Gateway? → condición `Accepted`
-2. ¿Sus referencias a backends son válidas? → condición `ResolvedRefs`
-3. ¿Los backends existen, en el puerto correcto, con endpoints?
+1. Is the route accepted by the Gateway? → `Accepted` condition
+2. Are its backend references valid? → `ResolvedRefs` condition
+3. Do the backends exist, on the right port, with endpoints?
 
 ```bash
 kubectl get httproute bakery -n cafe -o jsonpath='{range .status.parents[*].conditions[*]}{.type}={.status} ({.reason}): {.message}{"\n"}{end}'
@@ -27,23 +27,24 @@ kubectl get svc,endpointslices -n bakery
 ```{{exec}}
 
 <details>
-<summary>Pista 1</summary>
+<summary>Hint 1</summary>
 
-Una ruta que apunta a un Service de **otro namespace** necesita que el dueño de ese namespace lo
-autorice con un `ReferenceGrant` (razón `RefNotPermitted`). El grant vive en el namespace **destino**.
-
-</details>
-
-<details>
-<summary>Pista 2</summary>
-
-Después del grant, vuelve a revisar el status. ¿Existe un Service llamado `bread-svc`? ¿Qué puerto
-expone realmente el Service `bread`?
+A route that points to a Service in **another namespace** needs the owner of that namespace to
+authorize it with a `ReferenceGrant` (reason `RefNotPermitted`). The grant lives in the **target**
+namespace.
 
 </details>
 
 <details>
-<summary>Solución</summary>
+<summary>Hint 2</summary>
+
+After the grant, check the status again. Is there a Service called `bread-svc`? Which port does the
+`bread` Service actually expose?
+
+</details>
+
+<details>
+<summary>Solution</summary>
 
 ```bash
 cat <<'YAML' | kubectl apply -f -
@@ -71,20 +72,20 @@ kubectl patch httproute bakery -n cafe --type=json -p '[
 
 </details>
 
-Verifica:
+Verify:
 
 ```bash
 kubectl get httproute bakery -n cafe -o jsonpath='{range .status.parents[*].conditions[*]}{.type}={.status} ({.reason}){"\n"}{end}'
 curl -s -H "Host: bakery.example" http://$NODE_IP:30080/ | grep -E '"(namespace|pod)"'
 ```{{exec}}
 
-> **Resumen de razones frecuentes en `status`**
+> **Common `status` reasons**
 >
-> | Condición / razón | Causa típica |
+> | Condition / reason | Typical cause |
 > |---|---|
-> | `Accepted=False` `NotAllowedByListeners` | El namespace de la ruta no cumple `allowedRoutes` |
-> | `Accepted=False` `NoMatchingListenerHostname` | Los `hostnames` de la ruta no encajan con el listener |
-> | `Accepted=False` `NoMatchingParent` | `sectionName`/`port` no existe en el Gateway |
-> | `ResolvedRefs=False` `RefNotPermitted` | Falta `ReferenceGrant` para la referencia cruzada |
-> | `ResolvedRefs=False` `BackendNotFound` | El Service no existe (o puerto incorrecto) |
-> | *status vacío* | Ningún controlador reconoce el `parentRef` (nombre/namespace erróneo) |
+> | `Accepted=False` `NotAllowedByListeners` | The route's namespace doesn't satisfy `allowedRoutes` |
+> | `Accepted=False` `NoMatchingListenerHostname` | The route's `hostnames` don't fit the listener |
+> | `Accepted=False` `NoMatchingParent` | The `sectionName`/`port` doesn't exist on the Gateway |
+> | `ResolvedRefs=False` `RefNotPermitted` | Missing `ReferenceGrant` for the cross-namespace reference |
+> | `ResolvedRefs=False` `BackendNotFound` | The Service doesn't exist (or wrong port) |
+> | *empty status* | No controller recognizes the `parentRef` (wrong name/namespace) |

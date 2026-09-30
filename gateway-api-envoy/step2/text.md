@@ -1,4 +1,4 @@
-# Primer Gateway y HTTPRoute
+# First Gateway and HTTPRoute
 
 ### Gateway
 
@@ -19,14 +19,14 @@ YAML
 kubectl wait -n apps gateway/eg --for=condition=Programmed --timeout=180s
 ```{{exec}}
 
-A diferencia de NGF, Envoy Gateway crea el data plane en **su propio namespace**
-(`envoy-gateway-system`) y lo etiqueta con el Gateway que lo originó:
+Unlike NGF, Envoy Gateway creates the data plane in **its own namespace**
+(`envoy-gateway-system`) and labels it with the Gateway it belongs to:
 
 ```bash
 kubectl get deploy,svc -n envoy-gateway-system -l gateway.envoyproxy.io/owning-gateway-name=eg
 ```{{exec}}
 
-Guarda la IP del nodo y el NodePort asignado al puerto 80:
+Save the node IP and the NodePort assigned to port 80:
 
 ```bash
 export NODE_IP=$(kubectl get nodes -o jsonpath='{.items[0].status.addresses[?(@.type=="InternalIP")].address}')
@@ -34,16 +34,16 @@ export GW_PORT=$(kubectl get svc -n envoy-gateway-system \
   -l gateway.envoyproxy.io/owning-gateway-name=eg,gateway.envoyproxy.io/owning-gateway-namespace=apps \
   -o jsonpath='{.items[0].spec.ports[?(@.port==80)].nodePort}')
 echo "export NODE_IP=$NODE_IP GW_PORT=$GW_PORT" >> ~/.bashrc
-echo "Gateway en http://$NODE_IP:$GW_PORT"
+echo "Gateway at http://$NODE_IP:$GW_PORT"
 ```{{exec}}
 
-### Tarea: HTTPRoute
+### Task: HTTPRoute
 
-Crea una `HTTPRoute` llamada `web` en `apps` que envíe todo el tráfico de `www.example` al Service
-`web` (puerto 80).
+Create an `HTTPRoute` named `web` in `apps` that sends all traffic for `www.example` to the `web`
+Service (port 80).
 
 <details>
-<summary>Solución</summary>
+<summary>Solution</summary>
 
 ```bash
 cat <<'YAML' | kubectl apply -f -
@@ -64,12 +64,12 @@ spec:
 YAML
 ```{{exec}}
 
-> Sin `matches`, la regla equivale a `PathPrefix /`. Sin `namespace` en `parentRefs`, se asume el
-> de la ruta.
+> Without `matches`, the rule is equivalent to `PathPrefix /`. Without a `namespace` in
+> `parentRefs`, the route's own namespace is assumed.
 
 </details>
 
 ```bash
 curl -s -H "Host: www.example" http://$NODE_IP:$GW_PORT/ | grep -E '"(host|pod)"'
-curl -s -o /dev/null -w "otro host -> %{http_code}\n" -H "Host: otro.example" http://$NODE_IP:$GW_PORT/
+curl -s -o /dev/null -w "other host -> %{http_code}\n" -H "Host: other.example" http://$NODE_IP:$GW_PORT/
 ```{{exec}}

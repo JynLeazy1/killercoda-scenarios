@@ -1,26 +1,26 @@
-# Filtros: headers, rewrite y redirect
+# Filters: headers, rewrite and redirect
 
-Los **filtros** modifican la petición o la respuesta en una regla. Los del canal standard son:
+**Filters** modify the request or the response within a rule. The standard-channel filters are:
 
-| Filtro | Qué hace |
+| Filter | What it does |
 |---|---|
-| `RequestHeaderModifier` | Añade (`add`), sobrescribe (`set`) o elimina (`remove`) headers de la petición |
-| `ResponseHeaderModifier` | Lo mismo, sobre la respuesta |
-| `URLRewrite` | Reescribe host y/o path antes de enviar al backend |
-| `RequestRedirect` | Responde con un 3xx (cambio de esquema, host, puerto o path) |
-| `RequestMirror` | Copia el tráfico a otro backend (lo verás en el escenario de Envoy) |
+| `RequestHeaderModifier` | Adds (`add`), overwrites (`set`) or removes (`remove`) request headers |
+| `ResponseHeaderModifier` | Same, on the response |
+| `URLRewrite` | Rewrites the host and/or path before forwarding to the backend |
+| `RequestRedirect` | Responds with a 3xx (change of scheme, host, port or path) |
+| `RequestMirror` | Copies traffic to another backend (you'll see it in the Envoy scenario) |
 
-### Tarea
+### Task
 
-Reescribe la ruta `tea` para que tenga **tres reglas**:
+Rewrite the `tea` route so it has **three rules**:
 
-1. `Exact /tea` → servicio `tea`, añadiendo el header de petición `X-Cafe-Tier: premium` y el
-   header de respuesta `X-Served-By: nginx-gateway-fabric`.
-2. `PathPrefix /menu` → servicio `tea`, reescribiendo el prefijo a `/tea/menu`.
-3. `PathPrefix /old-tea` → redirección **301** a `/tea`.
+1. `Exact /tea` → service `tea`, adding the request header `X-Cafe-Tier: premium` and the
+   response header `X-Served-By: nginx-gateway-fabric`.
+2. `PathPrefix /menu` → service `tea`, rewriting the prefix to `/tea/menu`.
+3. `PathPrefix /old-tea` → **301** redirect to `/tea`.
 
 <details>
-<summary>Solución</summary>
+<summary>Solution</summary>
 
 ```bash
 cat <<'YAML' | kubectl apply -f -
@@ -83,29 +83,29 @@ YAML
 
 </details>
 
-### Pruébalo
+### Try it
 
-> Tras cada cambio, NGF regenera la configuración y recarga NGINX. Si una prueba falla justo
-> después de aplicar, espera un par de segundos y repítela.
+> After every change, NGF regenerates its configuration and reloads NGINX. If a test fails right
+> after applying, wait a couple of seconds and run it again.
 
-El backend recibe el header añadido y nosotros vemos el de respuesta:
+The backend receives the added header and we see the response header:
 
 ```bash
 curl -si -H "Host: cafe.example" http://$NODE_IP:30080/tea | grep -iE 'x-served-by|x-cafe-tier' -A1
 ```{{exec}}
 
-El backend recibe el path reescrito:
+The backend receives the rewritten path:
 
 ```bash
 curl -s -H "Host: cafe.example" http://$NODE_IP:30080/menu/today | grep '"path"'
 ```{{exec}}
 
-La redirección:
+The redirect:
 
 ```bash
 curl -si -H "Host: cafe.example" http://$NODE_IP:30080/old-tea | grep -iE '^(HTTP|location)'
 ```{{exec}}
 
-> `RequestRedirect` y `backendRefs` son incompatibles en la misma regla: una redirección responde
-> directamente al cliente sin llegar a ningún backend. Tampoco se puede combinar `URLRewrite` con
-> `RequestRedirect` en la misma regla.
+> `RequestRedirect` and `backendRefs` are incompatible in the same rule: a redirect answers the
+> client directly without reaching any backend. You also can't combine `URLRewrite` with
+> `RequestRedirect` in the same rule.

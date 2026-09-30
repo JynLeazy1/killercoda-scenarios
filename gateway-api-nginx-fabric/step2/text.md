@@ -1,7 +1,7 @@
-# Crear un Gateway compartido
+# Create a shared Gateway
 
-El equipo de plataforma publica **un único Gateway** en el namespace `infra` y decide qué
-namespaces pueden colgar rutas de él mediante `allowedRoutes`.
+The platform team publishes **a single Gateway** in the `infra` namespace and decides which
+namespaces may attach routes to it through `allowedRoutes`.
 
 ```bash
 cat <<'YAML' | kubectl apply -f -
@@ -25,36 +25,36 @@ spec:
 YAML
 ```{{exec}}
 
-Opciones de `allowedRoutes.namespaces.from`:
+`allowedRoutes.namespaces.from` options:
 
-| Valor | Significado |
+| Value | Meaning |
 |---|---|
-| `Same` (por defecto) | Solo rutas del mismo namespace que el Gateway |
-| `All` | Rutas de cualquier namespace |
-| `Selector` | Solo namespaces cuyas labels coincidan con el selector |
+| `Same` (default) | Only routes in the same namespace as the Gateway |
+| `All` | Routes from any namespace |
+| `Selector` | Only namespaces whose labels match the selector |
 
-### Observa el aprovisionamiento
+### Watch the provisioning
 
 ```bash
 kubectl get gateway -n infra
 kubectl get deploy,svc,pods -n infra
 ```{{exec}}
 
-NGF creó `cafe-gw-nginx` (Deployment y Service). Espera a que el Gateway esté `PROGRAMMED=True`:
+NGF created `cafe-gw-nginx` (Deployment and Service). Wait for the Gateway to be `PROGRAMMED=True`:
 
 ```bash
 kubectl wait -n infra gateway/cafe-gw --for=condition=Programmed --timeout=120s
 kubectl get svc cafe-gw-nginx -n infra
 ```{{exec}}
 
-El Service expone el puerto 80 en el NodePort **30080**. Guarda la IP del nodo para las pruebas:
+The Service exposes port 80 on NodePort **30080**. Save the node IP for testing:
 
 ```bash
 export NODE_IP=$(kubectl get nodes -o jsonpath='{.items[0].status.addresses[?(@.type=="InternalIP")].address}')
 curl -s -o /dev/null -w "%{http_code}\n" http://$NODE_IP:30080/
 ```{{exec}}
 
-Un `404` es correcto: el Gateway escucha, pero aún no tiene rutas.
+A `404` is expected: the Gateway is listening, but it has no routes yet.
 
-> **Condiciones clave del Gateway:** `Accepted` (la configuración es válida) y `Programmed`
-> (el data plane ya la aplicó). En el examen, `kubectl describe gateway` es tu mejor amigo.
+> **Key Gateway conditions:** `Accepted` (the configuration is valid) and `Programmed`
+> (the data plane has applied it). In the exam, `kubectl describe gateway` is your best friend.

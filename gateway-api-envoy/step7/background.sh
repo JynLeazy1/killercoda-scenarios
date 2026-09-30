@@ -1,5 +1,5 @@
 #!/bin/bash
-# Configuración rota que el alumno debe diagnosticar
+# Broken configuration the learner has to troubleshoot
 cat <<'YAML' | kubectl apply -f -
 apiVersion: gateway.networking.k8s.io/v1
 kind: HTTPRoute

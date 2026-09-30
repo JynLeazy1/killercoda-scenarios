@@ -1,34 +1,34 @@
-# Troubleshooting con status y egctl
+# Troubleshooting with status and egctl
 
-Se desplegó la ruta `status` (host `status.example`) y la política `status-timeouts`, pero:
+The `status` route (host `status.example`) and the `status-timeouts` policy were deployed, but:
 
 ```bash
 curl -s -o /dev/null -w "%{http_code}\n" -H "Host: status.example" http://$NODE_IP:$GW_PORT/
 ```{{exec}}
 
-### Tarea
+### Task
 
-Consigue que `status.example` responda **200** y que la política `status-timeouts` quede
-**aceptada** sobre esa ruta. No renombres los recursos existentes.
+Make `status.example` respond **200** and get the `status-timeouts` policy **accepted** on that
+route. Don't rename the existing resources.
 
-### Herramientas
+### Tools
 
-**1. `status` de los recursos**
+**1. Resource `status`**
 
 ```bash
 kubectl get httproute status -n apps -o yaml | sed -n '/^status:/,$p'
 kubectl get btp status-timeouts -n apps -o yaml | sed -n '/^status:/,$p'
 ```{{exec}}
 
-Un `status` **vacío** es una pista en sí misma: ningún controlador se ha hecho cargo del recurso.
+An **empty** `status` is a clue in itself: no controller has picked up the resource.
 
-**2. `egctl`**, la CLI de Envoy Gateway (ya instalada):
+**2. `egctl`**, the Envoy Gateway CLI (already installed):
 
 ```bash
 egctl x status all -n apps
 ```{{exec}}
 
-Y para ver lo que Envoy tiene *realmente* cargado (rutas xDS):
+And to see what Envoy has *actually* loaded (xDS routes):
 
 ```bash
 egctl config envoy-proxy route -n envoy-gateway-system \
@@ -36,15 +36,15 @@ egctl config envoy-proxy route -n envoy-gateway-system \
 ```{{exec}}
 
 <details>
-<summary>Pista</summary>
+<summary>Hint</summary>
 
-Compara `spec.parentRefs[0].name` de la ruta con los Gateways que existen (`kubectl get gateway -n apps`),
-y el `targetRefs[0].name` de la política con el nombre real de la ruta.
+Compare the route's `spec.parentRefs[0].name` with the Gateways that exist (`kubectl get gateway -n apps`),
+and the policy's `targetRefs[0].name` with the route's actual name.
 
 </details>
 
 <details>
-<summary>Solución</summary>
+<summary>Solution</summary>
 
 ```bash
 kubectl patch httproute status -n apps --type=json \
@@ -55,7 +55,7 @@ kubectl patch btp status-timeouts -n apps --type=json \
 
 </details>
 
-Verifica:
+Verify:
 
 ```bash
 egctl x status httproute -n apps
@@ -63,6 +63,6 @@ kubectl get btp status-timeouts -n apps -o jsonpath='{range .status.ancestors[*]
 curl -s -o /dev/null -w "%{http_code}\n" -H "Host: status.example" http://$NODE_IP:$GW_PORT/
 ```{{exec}}
 
-> Otros comandos útiles: `egctl config envoy-proxy all` (volcado completo de Envoy),
-> `egctl x translate` (traduce YAML de Gateway API a xDS sin clúster) y los logs del control plane:
-> `kubectl logs -n envoy-gateway-system deploy/envoy-gateway`.
+> Other useful commands: `egctl config envoy-proxy all` (full Envoy dump),
+> `egctl x translate` (translates Gateway API YAML into xDS without a cluster) and the control
+> plane logs: `kubectl logs -n envoy-gateway-system deploy/envoy-gateway`.

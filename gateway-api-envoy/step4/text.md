@@ -1,18 +1,18 @@
-# Mirroring y traffic splitting
+# Mirroring and traffic splitting
 
-Vamos a sacar `api-v2` en dos fases.
+We'll roll out `api-v2` in two phases.
 
-## Fase 1: shadow traffic con `RequestMirror`
+## Phase 1: shadow traffic with `RequestMirror`
 
-Envoy copia cada petición a `api-v2`, **descarta su respuesta** y solo devuelve la de `api`.
-Así pruebas la nueva versión con tráfico real sin afectar a los usuarios.
+Envoy copies every request to `api-v2`, **discards its response** and only returns the one from
+`api`. That way you test the new version with real traffic without affecting users.
 
-### Tarea
+### Task
 
-Añade un filtro `RequestMirror` hacia `api-v2` en la regla `/api` de la ruta `shop`.
+Add a `RequestMirror` filter towards `api-v2` to the `/api` rule of the `shop` route.
 
 <details>
-<summary>Solución</summary>
+<summary>Solution</summary>
 
 ```bash
 cat <<'YAML' | kubectl apply -f -
@@ -52,26 +52,26 @@ YAML
 
 </details>
 
-Envía tráfico: todas las respuestas vienen de `api`...
+Send some traffic: every response comes from `api`...
 
 ```bash
 for i in $(seq 1 5); do curl -s -H "Host: shop.example" http://$NODE_IP:$GW_PORT/api/mirror-test | grep -oE '"api(-v2)?-[a-z0-9]+' | head -1; done
 ```{{exec}}
 
-...pero `api-v2` también las recibió:
+...but `api-v2` received them too:
 
 ```bash
 kubectl logs -n apps deploy/api-v2 | grep mirror-test | tail -5
 ```{{exec}}
 
-## Fase 2: traffic split 50/50
+## Phase 2: 50/50 traffic split
 
-### Tarea
+### Task
 
-Sustituye el mirror por un reparto **50 % `api` / 50 % `api-v2`** usando `weight`.
+Replace the mirror with a **50% `api` / 50% `api-v2`** split using `weight`.
 
 <details>
-<summary>Solución</summary>
+<summary>Solution</summary>
 
 ```bash
 kubectl patch httproute shop -n apps --type=json -p '[
@@ -89,4 +89,4 @@ kubectl patch httproute shop -n apps --type=json -p '[
 for i in $(seq 1 40); do curl -s -H "Host: shop.example" http://$NODE_IP:$GW_PORT/api | grep -oE '"api(-v2)?-' | head -1; done | sort | uniq -c
 ```{{exec}}
 
-> `RequestMirror` admite además `percent`/`fraction` para copiar solo parte del tráfico.
+> `RequestMirror` also supports `percent`/`fraction` to copy only part of the traffic.

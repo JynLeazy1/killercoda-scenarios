@@ -1,16 +1,16 @@
-# BackendTrafficPolicy: rate limit, timeouts y retries
+# BackendTrafficPolicy: rate limit, timeouts and retries
 
-## 1. Timeouts (estándar de Gateway API)
+## 1. Timeouts (Gateway API standard)
 
-`HTTPRoute` soporta `timeouts` por regla sin CRDs adicionales. El backend de prueba acepta
-`?delay=<duración>` para simular lentitud.
+`HTTPRoute` supports per-rule `timeouts` with no extra CRDs. The test backend accepts
+`?delay=<duration>` to simulate slowness.
 
-### Tarea
+### Task
 
-Configura en la ruta `web` un timeout de petición de **2s**.
+Configure a request timeout of **2s** on the `web` route.
 
 <details>
-<summary>Solución</summary>
+<summary>Solution</summary>
 
 ```bash
 kubectl patch httproute web -n apps --type=json \
@@ -20,16 +20,16 @@ kubectl patch httproute web -n apps --type=json \
 </details>
 
 ```bash
-curl -s -o /dev/null -w "delay=1s -> %{http_code} en %{time_total}s\n" -H "Host: www.example" "http://$NODE_IP:$GW_PORT/?delay=1s"
-curl -s -o /dev/null -w "delay=5s -> %{http_code} en %{time_total}s\n" -H "Host: www.example" "http://$NODE_IP:$GW_PORT/?delay=5s"
+curl -s -o /dev/null -w "delay=1s -> %{http_code} in %{time_total}s\n" -H "Host: www.example" "http://$NODE_IP:$GW_PORT/?delay=1s"
+curl -s -o /dev/null -w "delay=5s -> %{http_code} in %{time_total}s\n" -H "Host: www.example" "http://$NODE_IP:$GW_PORT/?delay=5s"
 ```{{exec}}
 
-La segunda devuelve **504** a los ~2 segundos.
+The second one returns **504** after ~2 seconds.
 
-## 2. Retries con `BackendTrafficPolicy`
+## 2. Retries with `BackendTrafficPolicy`
 
-`BackendTrafficPolicy` es una política de Envoy Gateway que se adjunta a un `Gateway` o a una ruta
-mediante `targetRefs`. Con `?delay=abc` el backend responde **500**; vamos a reintentarlo.
+`BackendTrafficPolicy` is an Envoy Gateway policy that attaches to a `Gateway` or a route through
+`targetRefs`. With `?delay=abc` the backend responds **500**; let's retry it.
 
 ```bash
 cat <<'YAML' | kubectl apply -f -
@@ -56,24 +56,24 @@ YAML
 kubectl get backendtrafficpolicy web-policy -n apps -o jsonpath='{range .status.ancestors[*].conditions[*]}{.type}={.status}{"\n"}{end}'
 ```{{exec}}
 
-Una sola petición del cliente... ¿cuántas llegan al backend?
+A single client request... how many reach the backend?
 
 ```bash
 curl -s -o /dev/null -w "%{http_code}\n" -H "Host: www.example" "http://$NODE_IP:$GW_PORT/retry-test?delay=abc"
 kubectl logs -n apps deploy/web | grep -c retry-test
 ```{{exec}}
 
-Deberías ver **4** (1 intento + 3 reintentos).
+You should see **4** (1 attempt + 3 retries).
 
-## 3. Rate limiting local
+## 3. Local rate limiting
 
-### Tarea
+### Task
 
-Amplía `web-policy` para limitar la ruta a **5 peticiones por minuto** (rate limit *local*, es
-decir, por réplica de Envoy, sin servicio externo).
+Extend `web-policy` to limit the route to **5 requests per minute** (a *local* rate limit, i.e.
+per Envoy replica, with no external service).
 
 <details>
-<summary>Solución</summary>
+<summary>Solution</summary>
 
 ```bash
 kubectl patch backendtrafficpolicy web-policy -n apps --type=merge -p '
@@ -95,7 +95,7 @@ for i in $(seq 1 8); do curl -s -o /dev/null -w "%{http_code} " -H "Host: www.ex
 curl -si -H "Host: www.example" http://$NODE_IP:$GW_PORT/ | grep -i ratelimit
 ```{{exec}}
 
-A partir de la sexta petición obtendrás **429** y los headers `x-ratelimit-*`.
+From the sixth request on you'll get **429** and the `x-ratelimit-*` headers.
 
-> Con `clientSelectors` puedes limitar por header o IP de origen, y con `type: Global` compartir el
-> contador entre réplicas usando un servicio de rate limit con Redis.
+> With `clientSelectors` you can limit per header or source IP, and with `type: Global` share the
+> counter across replicas using a rate limit service backed by Redis.

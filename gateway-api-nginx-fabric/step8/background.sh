@@ -1,5 +1,5 @@
 #!/bin/bash
-# Escenario roto: un equipo de otro namespace intenta publicar su servicio.
+# Broken setup: a team from another namespace tries to publish its service.
 cat <<'YAML' | kubectl apply -f -
 apiVersion: v1
 kind: Namespace

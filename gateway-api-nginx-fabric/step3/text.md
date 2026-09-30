@@ -1,7 +1,7 @@
-# HTTPRoute y allowedRoutes entre namespaces
+# HTTPRoute and cross-namespace allowedRoutes
 
-El equipo de aplicaciones (namespace `cafe`) crea sus rutas apuntando al Gateway de `infra`
-mediante `parentRefs`. Vamos a crear **dos rutas independientes** para el mismo host.
+The application team (namespace `cafe`) creates its routes pointing at the Gateway in `infra`
+through `parentRefs`. We'll create **two independent routes** for the same host.
 
 ```bash
 cat <<'YAML' | kubectl apply -f -
@@ -47,27 +47,27 @@ spec:
 YAML
 ```{{exec}}
 
-### ¿Funciona?
+### Does it work?
 
 ```bash
 curl -s -o /dev/null -w "%{http_code}\n" -H "Host: cafe.example" http://$NODE_IP:30080/coffee
 ```{{exec}}
 
-Sigue devolviendo `404`. Revisa el **status** de la ruta: ahí es donde el controlador te explica qué pasa.
+Still `404`. Check the route's **status**: that's where the controller tells you what's going on.
 
 ```bash
 kubectl get httproute coffee -n cafe -o jsonpath='{range .status.parents[*].conditions[*]}{.type}={.status} ({.reason}){"\n"}{end}'
 ```{{exec}}
 
-Verás `Accepted=False (NotAllowedByListeners)`: el listener solo admite namespaces con la label
-`shared-gateway-access=true`.
+You'll see `Accepted=False (NotAllowedByListeners)`: the listener only admits namespaces with the
+label `shared-gateway-access=true`.
 
-### Tarea
+### Task
 
-Añade la label al namespace `cafe` para que el Gateway acepte sus rutas.
+Add the label to the `cafe` namespace so the Gateway accepts its routes.
 
 <details>
-<summary>Solución</summary>
+<summary>Solution</summary>
 
 ```bash
 kubectl label namespace cafe shared-gateway-access=true
@@ -75,8 +75,8 @@ kubectl label namespace cafe shared-gateway-access=true
 
 </details>
 
-Comprueba de nuevo (el controlador puede tardar unos segundos en reconciliar y recargar NGINX;
-si ves un `404`, repite el comando):
+Check again (the controller may take a few seconds to reconcile and reload NGINX;
+if you get a `404`, run the command again):
 
 ```bash
 kubectl get httproute -n cafe
@@ -85,5 +85,5 @@ curl -s -H "Host: cafe.example" http://$NODE_IP:30080/tea | grep -E '"(path|pod)
 curl -s -o /dev/null -w "/tea/extra -> %{http_code}\n" -H "Host: cafe.example" http://$NODE_IP:30080/tea/extra
 ```{{exec}}
 
-> **Tipos de path match:** `PathPrefix` (por segmentos: `/coffee` coincide con `/coffee/latte` pero
-> **no** con `/coffeeshop`), `Exact` y `RegularExpression` (soporte dependiente de la implementación).
+> **Path match types:** `PathPrefix` (segment-based: `/coffee` matches `/coffee/latte` but
+> **not** `/coffeeshop`), `Exact` and `RegularExpression` (implementation-specific support).

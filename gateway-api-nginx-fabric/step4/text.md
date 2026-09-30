@@ -1,16 +1,16 @@
-# Canary: pesos y match por header
+# Canary: weights and header matching
 
-Queremos lanzar `coffee-v2` de forma progresiva:
+We want to roll out `coffee-v2` progressively:
 
-* Quien envíe el header `x-version: v2` siempre llega a **v2** (pruebas internas).
-* El resto del tráfico se reparte **80 % v1 / 20 % v2**.
+* Anyone sending the header `x-version: v2` always reaches **v2** (internal testing).
+* The rest of the traffic is split **80% v1 / 20% v2**.
 
-### Tarea
+### Task
 
-Modifica la ruta `coffee` para implementar ese comportamiento.
+Modify the `coffee` route to implement that behavior.
 
 <details>
-<summary>Solución</summary>
+<summary>Solution</summary>
 
 ```bash
 cat <<'YAML' | kubectl apply -f -
@@ -52,7 +52,7 @@ YAML
 
 </details>
 
-### Prueba el reparto
+### Test the split
 
 ```bash
 for i in $(seq 1 50); do
@@ -60,7 +60,7 @@ for i in $(seq 1 50); do
 done | sort | uniq -c
 ```{{exec}}
 
-Y el match por header:
+And the header match:
 
 ```bash
 for i in $(seq 1 5); do
@@ -68,6 +68,6 @@ for i in $(seq 1 5); do
 done
 ```{{exec}}
 
-> **Precedencia:** cuando varias reglas coinciden, gana la más específica (path exacto antes que
-> prefijo, prefijo más largo, más headers, más query params...). Por eso la regla con header
-> gana aunque ambas usen `/coffee`. Un `weight: 0` desactiva un backend sin borrarlo.
+> **Precedence:** when several rules match, the most specific one wins (exact path before prefix,
+> longer prefix, more headers, more query params...). That's why the header rule wins even though
+> both use `/coffee`. A `weight: 0` disables a backend without removing it.

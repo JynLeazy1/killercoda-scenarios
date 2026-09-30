@@ -1,28 +1,28 @@
-# Gateway API con NGINX Gateway Fabric
+# Gateway API with NGINX Gateway Fabric
 
-La **Gateway API** es el sucesor de `Ingress` y ya forma parte de los temarios de **CKA** y **CKAD**
-("usar Gateway API para gestionar tráfico de entrada"). En este escenario la vas a practicar con
-**NGINX Gateway Fabric (NGF) v2.7**, la implementación de NGINX de la especificación.
+**Gateway API** is the successor to `Ingress`, and it is now part of the **CKA** and **CKAD**
+curricula ("use the Gateway API to manage ingress traffic"). In this scenario you practice it with
+**NGINX Gateway Fabric (NGF) v2.7**, NGINX's implementation of the specification.
 
-## Modelo orientado a roles
+## Role-oriented model
 
-| Recurso | Quién lo gestiona | Para qué sirve |
+| Resource | Managed by | Purpose |
 |---|---|---|
-| `GatewayClass` | Proveedor de infraestructura | Define *qué* controlador implementa los Gateways (similar a `IngressClass`) |
-| `Gateway` | Operador del clúster / plataforma | Punto de entrada: listeners, puertos, TLS y *qué namespaces* pueden conectarse |
-| `HTTPRoute` | Equipo de aplicación | Reglas de enrutamiento: hosts, paths, headers, pesos y filtros |
-| `ReferenceGrant` | Dueño del namespace destino | Autoriza referencias entre namespaces |
+| `GatewayClass` | Infrastructure provider | Defines *which* controller implements the Gateways (similar to `IngressClass`) |
+| `Gateway` | Cluster / platform operator | Entry point: listeners, ports, TLS and *which namespaces* may attach |
+| `HTTPRoute` | Application team | Routing rules: hosts, paths, headers, weights and filters |
+| `ReferenceGrant` | Owner of the target namespace | Authorizes cross-namespace references |
 
-## Lo que vas a hacer
+## What you will do
 
-1. Instalar los CRDs de Gateway API y NGINX Gateway Fabric
-2. Crear un `Gateway` compartido en el namespace `infra`
-3. Conectar `HTTPRoute`s desde el namespace `cafe` (`allowedRoutes`)
-4. Hacer un *canary* con pesos y match por header
-5. Usar filtros: modificar headers, reescribir URLs y redirigir
-6. Terminar TLS y redirigir HTTP → HTTPS
-7. Aplicar rate limiting con una política propia de NGF
-8. Diagnosticar rutas rotas (`ReferenceGrant`, `ResolvedRefs`)
+1. Install the Gateway API CRDs and NGINX Gateway Fabric
+2. Create a shared `Gateway` in the `infra` namespace
+3. Attach `HTTPRoute`s from the `cafe` namespace (`allowedRoutes`)
+4. Run a *canary* with weights and header matching
+5. Use filters: modify headers, rewrite URLs and redirect
+6. Terminate TLS and redirect HTTP → HTTPS
+7. Apply rate limiting with an NGF-specific policy
+8. Troubleshoot broken routes (`ReferenceGrant`, `ResolvedRefs`)
 
-> Mientras lees esto, se están desplegando las apps de ejemplo `coffee-v1`, `coffee-v2` y `tea`
-> en el namespace `cafe`.
+> While you read this, the sample apps `coffee-v1`, `coffee-v2` and `tea` are being deployed
+> into the `cafe` namespace.

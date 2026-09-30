@@ -1,9 +1,9 @@
-# TLS y redirección HTTP → HTTPS
+# TLS and HTTP → HTTPS redirect
 
-### 1. Certificado y Secret
+### 1. Certificate and Secret
 
-Genera un certificado autofirmado para `cafe.example` y guárdalo como Secret TLS **en el namespace
-del Gateway** (así no hace falta `ReferenceGrant`):
+Generate a self-signed certificate for `cafe.example` and store it as a TLS Secret **in the
+Gateway's namespace** (so no `ReferenceGrant` is needed):
 
 ```bash
 openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
@@ -12,9 +12,9 @@ openssl req -x509 -nodes -days 365 -newkey rsa:2048 \
 kubectl create secret tls cafe-tls -n infra --cert=cafe.crt --key=cafe.key
 ```{{exec}}
 
-### 2. Listener HTTPS
+### 2. HTTPS listener
 
-Añade un segundo listener al Gateway:
+Add a second listener to the Gateway:
 
 ```bash
 cat <<'YAML' | kubectl apply -f -
@@ -55,12 +55,12 @@ kubectl wait -n infra gateway/cafe-gw --for=condition=Programmed --timeout=60s
 kubectl get svc cafe-gw-nginx -n infra
 ```{{exec}}
 
-El Service ahora expone también `443:30443`, gracias al `NginxProxy` que configuraste en el paso 1.
+The Service now also exposes `443:30443`, thanks to the `NginxProxy` you configured in step 1.
 
-### 3. `sectionName`: atar rutas a un listener concreto
+### 3. `sectionName`: bind routes to a specific listener
 
-Una ruta sin `sectionName` se adjunta a **todos** los listeners compatibles. Queremos que `coffee` y
-`tea` solo sirvan por HTTPS:
+A route without `sectionName` attaches to **every** compatible listener. We want `coffee` and
+`tea` to be served over HTTPS only:
 
 ```bash
 for r in coffee tea; do
@@ -69,13 +69,13 @@ for r in coffee tea; do
 done
 ```{{exec}}
 
-### 4. Tarea: redirección HTTP → HTTPS
+### 4. Task: HTTP → HTTPS redirect
 
-Crea una `HTTPRoute` llamada `https-redirect` en el namespace `cafe`, adjunta **solo** al listener
-`http`, para el host `cafe.example`, que responda con un **301** al esquema `https` y puerto `30443`.
+Create an `HTTPRoute` named `https-redirect` in the `cafe` namespace, attached **only** to the
+`http` listener, for host `cafe.example`, that responds with a **301** to scheme `https` and port `30443`.
 
 <details>
-<summary>Solución</summary>
+<summary>Solution</summary>
 
 ```bash
 cat <<'YAML' | kubectl apply -f -
@@ -101,16 +101,16 @@ spec:
 YAML
 ```{{exec}}
 
-> En producción el puerto sería 443 y podrías omitirlo; aquí usamos el NodePort.
+> In production the port would be 443 and you could omit it; here we use the NodePort.
 
 </details>
 
-### Pruébalo
+### Try it
 
-> Tras cada cambio, NGF regenera la configuración y recarga NGINX. Si una prueba falla justo
-> después de aplicar, espera un par de segundos y repítela.
+> After every change, NGF regenerates its configuration and reloads NGINX. If a test fails right
+> after applying, wait a couple of seconds and run it again.
 
-`--resolve` hace que curl envíe el SNI y el Host correctos sin tocar `/etc/hosts`:
+`--resolve` makes curl send the right SNI and Host without touching `/etc/hosts`:
 
 ```bash
 curl -si -H "Host: cafe.example" http://$NODE_IP:30080/coffee | grep -iE '^(HTTP|location)'

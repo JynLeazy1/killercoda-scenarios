@@ -1,24 +1,24 @@
-# ¡Escenario completado!
+# Scenario complete!
 
-Practicaste los puntos de Gateway API que aparecen en CKA/CKAD:
+You practiced the Gateway API topics that show up in CKA/CKAD:
 
-* Instalación de CRDs (canal standard) y de una implementación (NGINX Gateway Fabric)
-* `GatewayClass` → `Gateway` → `HTTPRoute` y el modelo orientado a roles
-* `allowedRoutes` con selector de namespaces y `sectionName`
-* Match por path (`Exact`/`PathPrefix`) y headers, precedencia de reglas
-* Traffic splitting con `weight`
-* Filtros `RequestHeaderModifier`, `ResponseHeaderModifier`, `URLRewrite`, `RequestRedirect`
-* Terminación TLS y redirección HTTP → HTTPS
+* Installing the CRDs (standard channel) and an implementation (NGINX Gateway Fabric)
+* `GatewayClass` → `Gateway` → `HTTPRoute` and the role-oriented model
+* `allowedRoutes` with a namespace selector, and `sectionName`
+* Path (`Exact`/`PathPrefix`) and header matching, rule precedence
+* Traffic splitting with `weight`
+* `RequestHeaderModifier`, `ResponseHeaderModifier`, `URLRewrite` and `RequestRedirect` filters
+* TLS termination and HTTP → HTTPS redirect
 * Policy Attachment (`RateLimitPolicy`)
-* Diagnóstico mediante `status.conditions` y `ReferenceGrant`
+* Troubleshooting with `status.conditions` and `ReferenceGrant`
 
-### Chuleta para el examen
+### Exam cheat sheet
 
 ```bash
-kubectl explain httproute.spec.rules --recursive | less   # sintaxis sin salir de la terminal
+kubectl explain httproute.spec.rules --recursive | less   # syntax without leaving the terminal
 kubectl get gateway,httproute -A
-kubectl describe httproute <nombre> -n <ns>              # Accepted / ResolvedRefs
+kubectl describe httproute <name> -n <ns>                # Accepted / ResolvedRefs
 ```
 
-**Siguiente paso:** el escenario *Gateway API con Envoy Gateway* cubre la migración desde
-`Ingress`, `RequestMirror` y las políticas de Envoy (rate limit, retries, autenticación).
+**Next:** the *Gateway API with Envoy Gateway* scenario covers migrating from `Ingress`,
+`RequestMirror` and Envoy's policies (rate limit, retries, authentication).

@@ -1,6 +1,6 @@
 {
-  "title": "Gateway API con NGINX Gateway Fabric",
-  "description": "Instala NGINX Gateway Fabric y domina Gateway API: Gateways compartidos, HTTPRoute, canary, filtros, TLS, rate limiting y troubleshooting (CKA/CKAD)",
+  "title": "Gateway API with NGINX Gateway Fabric",
+  "description": "Install NGINX Gateway Fabric and master Gateway API: shared Gateways, HTTPRoute, canary, filters, TLS, rate limiting and troubleshooting (CKA/CKAD)",
   "difficulty": "Intermediate",
   "time": "45 minutes",
   "details": {
@@ -10,19 +10,57 @@
       "foreground": "setup/foreground.sh"
     },
     "steps": [
-      { "title": "Instalar Gateway API y NGINX Gateway Fabric", "text": "step1/text.md", "verify": "step1/verify.sh" },
-      { "title": "Crear un Gateway compartido", "text": "step2/text.md", "verify": "step2/verify.sh" },
-      { "title": "HTTPRoute y allowedRoutes entre namespaces", "text": "step3/text.md", "verify": "step3/verify.sh" },
-      { "title": "Canary: pesos y match por header", "text": "step4/text.md", "verify": "step4/verify.sh" },
-      { "title": "Filtros: headers, rewrite y redirect", "text": "step5/text.md", "verify": "step5/verify.sh" },
-      { "title": "TLS y redirección HTTP a HTTPS", "text": "step6/text.md", "verify": "step6/verify.sh" },
-      { "title": "Rate limiting con RateLimitPolicy", "text": "step7/text.md", "verify": "step7/verify.sh" },
-      { "title": "Troubleshooting: ReferenceGrant y ResolvedRefs", "text": "step8/text.md", "verify": "step8/verify.sh", "background": "step8/background.sh" }
+      {
+        "title": "Install Gateway API and NGINX Gateway Fabric",
+        "text": "step1/text.md",
+        "verify": "step1/verify.sh"
+      },
+      {
+        "title": "Create a shared Gateway",
+        "text": "step2/text.md",
+        "verify": "step2/verify.sh"
+      },
+      {
+        "title": "HTTPRoute and cross-namespace allowedRoutes",
+        "text": "step3/text.md",
+        "verify": "step3/verify.sh"
+      },
+      {
+        "title": "Canary: weights and header matching",
+        "text": "step4/text.md",
+        "verify": "step4/verify.sh"
+      },
+      {
+        "title": "Filters: headers, rewrite and redirect",
+        "text": "step5/text.md",
+        "verify": "step5/verify.sh"
+      },
+      {
+        "title": "TLS and HTTP to HTTPS redirect",
+        "text": "step6/text.md",
+        "verify": "step6/verify.sh"
+      },
+      {
+        "title": "Rate limiting with RateLimitPolicy",
+        "text": "step7/text.md",
+        "verify": "step7/verify.sh"
+      },
+      {
+        "title": "Troubleshooting: ReferenceGrant and ResolvedRefs",
+        "text": "step8/text.md",
+        "verify": "step8/verify.sh",
+        "background": "step8/background.sh"
+      }
     ],
-    "finish": { "text": "finish.md" },
+    "finish": {
+      "text": "finish.md"
+    },
     "assets": {
       "host01": [
-        { "file": "*", "target": "/root/assets" }
+        {
+          "file": "*",
+          "target": "/root/assets"
+        }
       ]
     }
   },

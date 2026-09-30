@@ -1,30 +1,30 @@
-# Rate limiting con RateLimitPolicy
+# Rate limiting with RateLimitPolicy
 
-Gateway API define el enrutamiento, pero muchas capacidades (rate limiting, timeouts, tamaño de
-body, keep-alive...) se exponen como **Policy Attachment**: CRDs de cada implementación que se
-"enganchan" a un Gateway o a una ruta mediante `targetRefs`.
+Gateway API defines routing, but many capabilities (rate limiting, timeouts, body size,
+keep-alive...) are exposed through **Policy Attachment**: implementation-specific CRDs that
+"attach" to a Gateway or a route through `targetRefs`.
 
-Políticas de NGF:
+NGF policies:
 
 ```bash
 kubectl api-resources --api-group=gateway.nginx.org
 ```{{exec}}
 
-| Política | Uso |
+| Policy | Use |
 |---|---|
-| `ClientSettingsPolicy` | Tamaño máximo de body, keep-alive del cliente |
-| `ProxySettingsPolicy` | Buffers hacia el upstream |
-| `UpstreamSettingsPolicy` | Keep-alive y zona de memoria hacia los backends |
-| `RateLimitPolicy` | Limitación de peticiones (`limit_req` de NGINX) |
+| `ClientSettingsPolicy` | Max body size, client keep-alive |
+| `ProxySettingsPolicy` | Upstream buffers |
+| `UpstreamSettingsPolicy` | Keep-alive and shared memory zone towards backends |
+| `RateLimitPolicy` | Request limiting (NGINX `limit_req`) |
 | `ObservabilityPolicy` | Tracing (OpenTelemetry) |
 
-### Tarea
+### Task
 
-Crea una `RateLimitPolicy` llamada `tea-ratelimit` en `cafe` que limite la ruta `tea` a
-**2 peticiones por segundo por IP** y rechace el exceso con **429**.
+Create a `RateLimitPolicy` named `tea-ratelimit` in `cafe` that limits the `tea` route to
+**2 requests per second per IP** and rejects the excess with **429**.
 
 <details>
-<summary>Solución</summary>
+<summary>Solution</summary>
 
 ```bash
 cat <<'YAML' | kubectl apply -f -
@@ -50,13 +50,13 @@ YAML
 
 </details>
 
-Revisa que la política fue aceptada (las políticas también tienen `status`):
+Check that the policy was accepted (policies have a `status` too):
 
 ```bash
 kubectl describe rlpolicy tea-ratelimit -n cafe | sed -n '/Status:/,$p'
 ```{{exec}}
 
-### Pruébalo
+### Try it
 
 ```bash
 for i in $(seq 1 10); do
@@ -64,7 +64,7 @@ for i in $(seq 1 10); do
 done; echo
 ```{{exec}}
 
-Deberías ver algunos `200` seguidos de `429`. La ruta `coffee` no está afectada:
+You should see a few `200`s followed by `429`s. The `coffee` route is not affected:
 
 ```bash
 for i in $(seq 1 10); do
@@ -72,5 +72,5 @@ for i in $(seq 1 10); do
 done; echo
 ```{{exec}}
 
-> Estas políticas **no son portables**: si cambias de implementación (p. ej. a Envoy Gateway) tendrás
-> que traducirlas a sus CRDs equivalentes. El enrutamiento (`HTTPRoute`) sí es portable.
+> These policies are **not portable**: if you switch implementations (e.g. to Envoy Gateway) you
+> have to translate them into its equivalent CRDs. Routing (`HTTPRoute`), on the other hand, is portable.

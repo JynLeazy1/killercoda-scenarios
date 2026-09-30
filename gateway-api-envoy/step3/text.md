@@ -1,12 +1,12 @@
-# Migrar un Ingress a Gateway API
+# Migrate an Ingress to Gateway API
 
-En `apps` existe un Ingress heredado (sin controlador que lo sirva):
+There's a legacy Ingress in `apps` (with no controller serving it):
 
 ```bash
 kubectl get ingress shop -n apps -o yaml | sed -n '/^spec:/,$p'
 ```{{exec}}
 
-### Equivalencias
+### Equivalences
 
 | Ingress | Gateway API |
 |---|---|
@@ -16,27 +16,27 @@ kubectl get ingress shop -n apps -o yaml | sed -n '/^spec:/,$p'
 | `pathType: Exact` | `path.type: Exact` |
 | `backend.service.name/port.number` | `backendRefs[].name/port` |
 | `tls[].secretName` | `Gateway.spec.listeners[].tls.certificateRefs` |
-| Anotaciones (`rewrite-target`, `ssl-redirect`, `canary`...) | Filtros estándar (`URLRewrite`, `RequestRedirect`, `weight`) o políticas de la implementación |
+| Annotations (`rewrite-target`, `ssl-redirect`, `canary`...) | Standard filters (`URLRewrite`, `RequestRedirect`, `weight`) or implementation policies |
 
-### Opción A: generar un borrador con `ingress2gateway`
+### Option A: generate a draft with `ingress2gateway`
 
-La herramienta oficial de SIG-Network traduce Ingress (y muchas anotaciones) a recursos de Gateway API:
+SIG-Network's official tool translates Ingress (and many annotations) into Gateway API resources:
 
 ```bash
 curl -sL https://github.com/kubernetes-sigs/ingress2gateway/releases/download/v1.2.0/ingress2gateway_Linux_x86_64.tar.gz | tar xz -C /usr/local/bin ingress2gateway
 ingress2gateway print --providers ingress-nginx --namespace apps
 ```{{exec}}
 
-Genera un `Gateway` propio y una `HTTPRoute`. Nosotros ya tenemos el Gateway `eg`, así que solo nos
-interesa la ruta, cambiando su `parentRefs`.
+It generates its own `Gateway` and an `HTTPRoute`. We already have the `eg` Gateway, so we only
+need the route, with its `parentRefs` changed.
 
-### Tarea
+### Task
 
-Crea una `HTTPRoute` llamada `shop` en `apps`, adjunta al Gateway `eg`, que replique el Ingress:
-`shop.example/api` → `api` y `shop.example/` → `web`.
+Create an `HTTPRoute` named `shop` in `apps`, attached to the `eg` Gateway, that replicates the
+Ingress: `shop.example/api` → `api` and `shop.example/` → `web`.
 
 <details>
-<summary>Solución</summary>
+<summary>Solution</summary>
 
 ```bash
 cat <<'YAML' | kubectl apply -f -
@@ -75,11 +75,11 @@ curl -s -H "Host: shop.example" http://$NODE_IP:$GW_PORT/api/products | grep -E 
 curl -s -H "Host: shop.example" http://$NODE_IP:$GW_PORT/cart | grep -E '"(path|pod)"'
 ```{{exec}}
 
-Una vez validada la ruta, el Ingress ya sobra:
+Once the route is validated, the Ingress is no longer needed:
 
 ```bash
 kubectl delete ingress shop -n apps
 ```{{exec}}
 
-> **Estrategia real de migración:** ejecutar ambos controladores en paralelo, crear las `HTTPRoute`,
-> validar contra la IP del nuevo Gateway, mover el DNS y, al final, borrar los `Ingress`.
+> **Real-world migration strategy:** run both controllers side by side, create the `HTTPRoute`s,
+> validate against the new Gateway's IP, move DNS and, finally, delete the `Ingress` objects.

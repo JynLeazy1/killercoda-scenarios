@@ -1,42 +1,41 @@
-# Instalar Envoy Gateway
+# Install Envoy Gateway
 
-El `install.yaml` de cada release incluye **los CRDs de Gateway API** (canal experimental), los
-**CRDs de Envoy Gateway** y el controlador. Por su tamaño se aplica con `--server-side`:
+Each release's `install.yaml` includes **the Gateway API CRDs** (experimental channel), the
+**Envoy Gateway CRDs** and the controller. Because of its size it is applied with `--server-side`:
 
 ```bash
 kubectl apply --server-side -f https://github.com/envoyproxy/gateway/releases/download/v1.9.2/install.yaml
 kubectl wait --timeout=5m -n envoy-gateway-system deployment/envoy-gateway --for=condition=Available
 ```{{exec}}
 
-> En producción lo habitual es Helm:
+> In production you'd typically use Helm:
 > `helm install eg oci://docker.io/envoyproxy/gateway-helm --version v1.9.2 -n envoy-gateway-system --create-namespace`
 
-Mira los CRDs propios de Envoy Gateway:
+Look at Envoy Gateway's own CRDs:
 
 ```bash
 kubectl api-resources --api-group=gateway.envoyproxy.io
 ```{{exec}}
 
-| CRD | Para qué sirve |
+| CRD | Purpose |
 |---|---|
-| `EnvoyProxy` | Cómo se despliega el data plane (réplicas, tipo de Service, recursos, logs...) |
-| `ClientTrafficPolicy` | Comportamiento entre cliente y Envoy (timeouts, HTTP/3, IP real...) |
-| `BackendTrafficPolicy` | Entre Envoy y el backend (rate limit, retries, circuit breaking, LB...) |
-| `SecurityPolicy` | Autenticación y autorización (Basic, JWT, OIDC, API Key, CORS...) |
-| `EnvoyExtensionPolicy` | Extensiones (Wasm, ext_proc, Lua) |
-| `EnvoyPatchPolicy` | Parches xDS de bajo nivel |
+| `EnvoyProxy` | How the data plane is deployed (replicas, Service type, resources, logs...) |
+| `ClientTrafficPolicy` | Behavior between client and Envoy (timeouts, HTTP/3, real client IP...) |
+| `BackendTrafficPolicy` | Between Envoy and the backend (rate limit, retries, circuit breaking, LB...) |
+| `SecurityPolicy` | Authentication and authorization (Basic, JWT, OIDC, API Key, CORS...) |
+| `EnvoyExtensionPolicy` | Extensions (Wasm, ext_proc, Lua) |
+| `EnvoyPatchPolicy` | Low-level xDS patches |
 
-### Tarea: GatewayClass con parámetros
+### Task: GatewayClass with parameters
 
-Por defecto Envoy Gateway crea Services `LoadBalancer`. En este laboratorio no hay balanceador, así
-que crea:
+By default Envoy Gateway creates `LoadBalancer` Services. This lab has no load balancer, so create:
 
-1. Un `EnvoyProxy` llamado `nodeport-proxy` en `envoy-gateway-system` con Service tipo `NodePort`.
-2. Una `GatewayClass` llamada `eg` con controlador `gateway.envoyproxy.io/gatewayclass-controller`
-   que lo referencie en `parametersRef`.
+1. An `EnvoyProxy` named `nodeport-proxy` in `envoy-gateway-system` with a `NodePort` Service.
+2. A `GatewayClass` named `eg` with controller `gateway.envoyproxy.io/gatewayclass-controller`
+   that references it in `parametersRef`.
 
 <details>
-<summary>Solución</summary>
+<summary>Solution</summary>
 
 ```bash
 cat <<'YAML' | kubectl apply -f -
@@ -72,5 +71,5 @@ YAML
 kubectl get gatewayclass eg
 ```{{exec}}
 
-> `parametersRef` es el mecanismo **estándar** de Gateway API para pasar configuración específica de
-> la implementación. En NGF apunta a `NginxProxy`; en Envoy Gateway, a `EnvoyProxy`.
+> `parametersRef` is Gateway API's **standard** mechanism for passing implementation-specific
+> configuration. In NGF it points to `NginxProxy`; in Envoy Gateway, to `EnvoyProxy`.

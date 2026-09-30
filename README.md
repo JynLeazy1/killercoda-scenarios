@@ -1,44 +1,44 @@
-# Escenarios Killercoda: temas nuevos de certificaciones Kubernetes
+# Killercoda scenarios: new Kubernetes certification topics
 
-Escenarios interactivos para [Killercoda](https://killercoda.com) que cubren temas añadidos
-recientemente a los temarios de CKA / CKAD y que no estaban cubiertos por los escenarios existentes.
+Interactive [Killercoda](https://killercoda.com) scenarios covering topics recently added to the
+CKA / CKAD curricula that weren't covered by existing scenarios.
 
-| Escenario | Temas | Duración |
+| Scenario | Topics | Duration |
 |---|---|---|
-| [`gateway-api-nginx-fabric`](gateway-api-nginx-fabric) | Gateway API con NGINX Gateway Fabric v2.7.2: Gateway compartido, `allowedRoutes`, `HTTPRoute`, canary, filtros, TLS, `RateLimitPolicy`, `ReferenceGrant` | ~45 min |
-| [`gateway-api-envoy`](gateway-api-envoy) | Gateway API con Envoy Gateway v1.9.2: `EnvoyProxy`, migración de Ingress (`ingress2gateway`), `RequestMirror`, timeouts, `BackendTrafficPolicy`, `SecurityPolicy`, `egctl` | ~45 min |
+| [`gateway-api-nginx-fabric`](gateway-api-nginx-fabric) | Gateway API with NGINX Gateway Fabric v2.7.2: shared Gateway, `allowedRoutes`, `HTTPRoute`, canary, filters, TLS, `RateLimitPolicy`, `ReferenceGrant` | ~45 min |
+| [`gateway-api-envoy`](gateway-api-envoy) | Gateway API with Envoy Gateway v1.9.2: `EnvoyProxy`, Ingress migration (`ingress2gateway`), `RequestMirror`, timeouts, `BackendTrafficPolicy`, `SecurityPolicy`, `egctl` | ~45 min |
 
-## Estructura
+## Layout
 
 ```
-<escenario>/
-├── index.json          # metadatos, pasos e imagen (kubernetes-kubeadm-1node)
+<scenario>/
+├── index.json          # metadata, steps and image (kubernetes-kubeadm-1node)
 ├── intro.md / finish.md
 ├── setup/
-│   ├── background.sh   # despliega las apps de ejemplo durante la intro
-│   └── foreground.sh   # espera a que el entorno esté listo
-├── assets/             # manifiestos copiados a /root/assets
+│   ├── background.sh   # deploys the sample apps during the intro
+│   └── foreground.sh   # waits until the environment is ready
+├── assets/             # manifests copied to /root/assets
 └── stepN/
-    ├── text.md         # teoría + tarea + solución plegable
-    ├── verify.sh       # botón "Check" (exit 0 = superado)
-    └── background.sh   # (opcional) prepara escenarios de troubleshooting
+    ├── text.md         # theory + task + collapsible solution
+    ├── verify.sh       # "Check" button (exit 0 = passed)
+    └── background.sh   # (optional) sets up troubleshooting exercises
 ```
 
-`structure.json` define el orden de los escenarios en el perfil de Killercoda.
+`structure.json` defines the order of the scenarios in the Killercoda profile.
 
-## Publicar
+## Publishing
 
-1. Sube este directorio a un repositorio de GitHub.
-2. En Killercoda → *Creator* → *Repository*, conecta el repositorio y añade la deploy key/webhook.
-3. Cada `push` actualiza los escenarios.
+1. In Killercoda → *Creator* → *Repository*, connect this repository.
+2. Add the deploy key and webhook Killercoda gives you to the GitHub repo settings.
+3. Every `push` updates the scenarios.
 
-## Actualizar versiones
+## Updating versions
 
-Las versiones están fijadas en los `text.md` y `background.sh`:
+Versions are pinned in the `text.md` and `background.sh` files:
 
 ```bash
 grep -rn 'v2.7.2\|v1.9.2\|v1.2.0\|echo-basic' .
 ```
 
-Probados de extremo a extremo (todos los comandos de solución + `verify.sh`) en un clúster `kind`
-con Kubernetes 1.34 el 2026-09-29.
+Tested end to end (every solution command + `verify.sh`) on a `kind` cluster running
+Kubernetes 1.34 on 2026-09-29.

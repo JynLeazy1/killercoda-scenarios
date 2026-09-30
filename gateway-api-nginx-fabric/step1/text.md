@@ -1,54 +1,54 @@
-# Instalar Gateway API y NGINX Gateway Fabric
+# Install Gateway API and NGINX Gateway Fabric
 
-La Gateway API **no viene incluida** en Kubernetes: sus recursos son CRDs que se instalan aparte.
-Cada implementación soporta una versión concreta, así que usamos la que acompaña a NGF.
+Gateway API is **not bundled** with Kubernetes: its resources are CRDs that you install separately.
+Each implementation supports a specific version, so we use the one that ships with NGF.
 
-### 1. CRDs de Gateway API (canal *standard*)
+### 1. Gateway API CRDs (*standard* channel)
 
 ```bash
 kubectl kustomize "https://github.com/nginx/nginx-gateway-fabric/config/crd/gateway-api/standard?ref=v2.7.2" | kubectl apply -f -
 ```{{exec}}
 
-Comprueba qué tipos nuevos hay en el clúster:
+Check which new types are now in the cluster:
 
 ```bash
 kubectl api-resources --api-group=gateway.networking.k8s.io
 ```{{exec}}
 
-> El canal **standard** contiene recursos estables (`GatewayClass`, `Gateway`, `HTTPRoute`,
-> `GRPCRoute`, `ReferenceGrant`...). El canal **experimental** añade cosas como `TCPRoute` o `TLSRoute`.
+> The **standard** channel contains stable resources (`GatewayClass`, `Gateway`, `HTTPRoute`,
+> `GRPCRoute`, `ReferenceGrant`...). The **experimental** channel adds things like `TCPRoute` or `TLSRoute`.
 
-### 2. CRDs propios de NGF
+### 2. NGF's own CRDs
 
-NGF añade CRDs para su configuración y para *políticas* (rate limiting, timeouts, etc.):
+NGF adds CRDs for its configuration and for *policies* (rate limiting, timeouts, etc.):
 
 ```bash
 kubectl apply --server-side -f https://raw.githubusercontent.com/nginx/nginx-gateway-fabric/v2.7.2/deploy/crds.yaml
 ```{{exec}}
 
-### 3. El controlador
+### 3. The controller
 
-En este laboratorio no hay balanceador de carga externo, así que usamos el manifiesto que expone el
-plano de datos como `NodePort`:
+This lab has no external load balancer, so we use the manifest that exposes the data plane as a
+`NodePort`:
 
 ```bash
 kubectl apply -f https://raw.githubusercontent.com/nginx/nginx-gateway-fabric/v2.7.2/deploy/nodeport/deploy.yaml
 kubectl wait --timeout=5m -n nginx-gateway deployment/nginx-gateway --for=condition=Available
 ```{{exec}}
 
-### 4. Revisa la GatewayClass
+### 4. Inspect the GatewayClass
 
 ```bash
 kubectl get gatewayclass
 kubectl describe gatewayclass nginx
 ```{{exec}}
 
-Debe mostrar `ACCEPTED=True`. Fíjate en `parametersRef`: apunta a un recurso `NginxProxy`, que es
-donde NGF guarda la configuración del plano de datos (réplicas, tipo de Service, imagen...).
+It should show `ACCEPTED=True`. Note the `parametersRef`: it points to an `NginxProxy` resource,
+which is where NGF keeps the data plane configuration (replicas, Service type, image...).
 
-### 5. Fija los NodePorts
+### 5. Pin the NodePorts
 
-Para no tener que buscar puertos aleatorios, indica a NGF qué NodePort usar para cada puerto de listener:
+So you don't have to look up random ports, tell NGF which NodePort to use for each listener port:
 
 ```bash
 kubectl patch nginxproxy nginx-gateway-proxy-config -n nginx-gateway --type merge -p '
@@ -58,6 +58,6 @@ kubectl patch nginxproxy nginx-gateway-proxy-config -n nginx-gateway --type merg
 ]}}}}'
 ```{{exec}}
 
-> **Arquitectura de NGF 2.x:** el *control plane* (`nginx-gateway`) observa los recursos de Gateway API
-> y, por **cada `Gateway`** que crees, aprovisiona un Deployment + Service de NGINX (el *data plane*)
-> en el namespace del Gateway. Por eso todavía no ves ningún NGINX corriendo.
+> **NGF 2.x architecture:** the *control plane* (`nginx-gateway`) watches Gateway API resources and,
+> for **each `Gateway`** you create, provisions an NGINX Deployment + Service (the *data plane*) in
+> the Gateway's namespace. That's why you don't see any NGINX running yet.

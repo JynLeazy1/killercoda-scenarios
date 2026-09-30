@@ -1,12 +1,12 @@
-# SecurityPolicy: autenticación básica
+# SecurityPolicy: basic authentication
 
-`SecurityPolicy` centraliza autenticación y autorización en el Gateway: **Basic Auth**, **JWT**,
-**OIDC**, **API Key**, **autorización externa**, **CORS** y reglas de **authorization** por IP o
-claims. Las aplicaciones no necesitan implementar nada.
+`SecurityPolicy` centralizes authentication and authorization at the Gateway: **Basic Auth**,
+**JWT**, **OIDC**, **API Key**, **external authorization**, **CORS** and **authorization** rules by
+IP or claims. Applications don't need to implement anything.
 
-### 1. Credenciales
+### 1. Credentials
 
-Envoy exige el formato `htpasswd` con hash **SHA**, y el Secret debe tener la clave `.htpasswd`:
+Envoy requires the `htpasswd` format with a **SHA** hash, and the Secret must use the key `.htpasswd`:
 
 ```bash
 echo "admin:{SHA}$(printf 'gateway123' | openssl dgst -binary -sha1 | openssl base64)" > .htpasswd
@@ -14,13 +14,13 @@ cat .htpasswd
 kubectl create secret generic shop-basic-auth -n apps --from-file=.htpasswd
 ```{{exec}}
 
-### 2. Tarea
+### 2. Task
 
-Crea una `SecurityPolicy` llamada `shop-auth` que exija Basic Auth (Secret `shop-basic-auth`) en la
-ruta `shop`.
+Create a `SecurityPolicy` named `shop-auth` that requires Basic Auth (Secret `shop-basic-auth`) on
+the `shop` route.
 
 <details>
-<summary>Solución</summary>
+<summary>Solution</summary>
 
 ```bash
 cat <<'YAML' | kubectl apply -f -
@@ -42,18 +42,18 @@ YAML
 
 </details>
 
-### Pruébalo
+### Try it
 
 ```bash
-curl -s -o /dev/null -w "sin credenciales  -> %{http_code}\n" -H "Host: shop.example" http://$NODE_IP:$GW_PORT/
-curl -s -o /dev/null -w "password erróneo  -> %{http_code}\n" -u admin:mal -H "Host: shop.example" http://$NODE_IP:$GW_PORT/
-curl -s -o /dev/null -w "con credenciales  -> %{http_code}\n" -u admin:gateway123 -H "Host: shop.example" http://$NODE_IP:$GW_PORT/
-curl -s -o /dev/null -w "otra ruta (web)   -> %{http_code}\n" -H "Host: www.example" http://$NODE_IP:$GW_PORT/
+curl -s -o /dev/null -w "no credentials    -> %{http_code}\n" -H "Host: shop.example" http://$NODE_IP:$GW_PORT/
+curl -s -o /dev/null -w "wrong password    -> %{http_code}\n" -u admin:wrong -H "Host: shop.example" http://$NODE_IP:$GW_PORT/
+curl -s -o /dev/null -w "valid credentials -> %{http_code}\n" -u admin:gateway123 -H "Host: shop.example" http://$NODE_IP:$GW_PORT/
+curl -s -o /dev/null -w "other route (web) -> %{http_code}\n" -H "Host: www.example" http://$NODE_IP:$GW_PORT/
 ```{{exec}}
 
-> **Jerarquía de políticas:** una política adjunta a una **ruta** tiene prioridad sobre la adjunta al
-> **Gateway**. Así el equipo de plataforma puede fijar un comportamiento por defecto y cada equipo
-> ajustarlo para sus rutas.
+> **Policy hierarchy:** a policy attached to a **route** takes precedence over one attached to the
+> **Gateway**. This way the platform team can set a default behavior and each team can tune it for
+> its own routes.
 >
-> La ruta `web` no pide credenciales (puede devolver `429` si aún no se renovó el límite por minuto
-> del paso anterior: es otra política, en otra ruta).
+> The `web` route doesn't ask for credentials (it may return `429` if the per-minute limit from the
+> previous step hasn't reset yet: that's a different policy, on a different route).

@@ -1,6 +1,6 @@
 {
-  "title": "Gateway API con Envoy Gateway",
-  "description": "Instala Envoy Gateway, migra un Ingress a HTTPRoute y usa mirroring, traffic splitting, rate limiting, retries, autenticación y egctl (CKA/CKAD)",
+  "title": "Gateway API with Envoy Gateway",
+  "description": "Install Envoy Gateway, migrate an Ingress to HTTPRoute and use mirroring, traffic splitting, rate limiting, retries, authentication and egctl (CKA/CKAD)",
   "difficulty": "Intermediate",
   "time": "45 minutes",
   "details": {
@@ -10,18 +10,52 @@
       "foreground": "setup/foreground.sh"
     },
     "steps": [
-      { "title": "Instalar Envoy Gateway", "text": "step1/text.md", "verify": "step1/verify.sh" },
-      { "title": "Primer Gateway y HTTPRoute", "text": "step2/text.md", "verify": "step2/verify.sh" },
-      { "title": "Migrar un Ingress a Gateway API", "text": "step3/text.md", "verify": "step3/verify.sh" },
-      { "title": "Mirroring y traffic splitting", "text": "step4/text.md", "verify": "step4/verify.sh" },
-      { "title": "BackendTrafficPolicy: rate limit, timeouts y retries", "text": "step5/text.md", "verify": "step5/verify.sh" },
-      { "title": "SecurityPolicy: autenticación básica", "text": "step6/text.md", "verify": "step6/verify.sh" },
-      { "title": "Troubleshooting con status y egctl", "text": "step7/text.md", "verify": "step7/verify.sh", "background": "step7/background.sh" }
+      {
+        "title": "Install Envoy Gateway",
+        "text": "step1/text.md",
+        "verify": "step1/verify.sh"
+      },
+      {
+        "title": "First Gateway and HTTPRoute",
+        "text": "step2/text.md",
+        "verify": "step2/verify.sh"
+      },
+      {
+        "title": "Migrate an Ingress to Gateway API",
+        "text": "step3/text.md",
+        "verify": "step3/verify.sh"
+      },
+      {
+        "title": "Mirroring and traffic splitting",
+        "text": "step4/text.md",
+        "verify": "step4/verify.sh"
+      },
+      {
+        "title": "BackendTrafficPolicy: rate limit, timeouts and retries",
+        "text": "step5/text.md",
+        "verify": "step5/verify.sh"
+      },
+      {
+        "title": "SecurityPolicy: basic authentication",
+        "text": "step6/text.md",
+        "verify": "step6/verify.sh"
+      },
+      {
+        "title": "Troubleshooting with status and egctl",
+        "text": "step7/text.md",
+        "verify": "step7/verify.sh",
+        "background": "step7/background.sh"
+      }
     ],
-    "finish": { "text": "finish.md" },
+    "finish": {
+      "text": "finish.md"
+    },
     "assets": {
       "host01": [
-        { "file": "*", "target": "/root/assets" }
+        {
+          "file": "*",
+          "target": "/root/assets"
+        }
       ]
     }
   },

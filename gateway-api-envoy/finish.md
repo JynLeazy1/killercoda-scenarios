@@ -1,26 +1,26 @@
-# ¡Escenario completado!
+# Scenario complete!
 
-Practicaste:
+You practiced:
 
-* Instalación de Envoy Gateway y `parametersRef` → `EnvoyProxy`
-* `Gateway` y `HTTPRoute` con Envoy como data plane
-* Migración de `Ingress` a `HTTPRoute` (manual y con `ingress2gateway`)
-* `RequestMirror` (shadow traffic) y traffic splitting con `weight`
-* `timeouts` estándar de `HTTPRoute`
-* `BackendTrafficPolicy`: retries y rate limiting local
+* Installing Envoy Gateway and `parametersRef` → `EnvoyProxy`
+* `Gateway` and `HTTPRoute` with Envoy as the data plane
+* Migrating `Ingress` to `HTTPRoute` (by hand and with `ingress2gateway`)
+* `RequestMirror` (shadow traffic) and traffic splitting with `weight`
+* Standard `HTTPRoute` `timeouts`
+* `BackendTrafficPolicy`: retries and local rate limiting
 * `SecurityPolicy`: Basic Auth
-* Diagnóstico con `status`, `egctl x status` y `egctl config envoy-proxy`
+* Troubleshooting with `status`, `egctl x status` and `egctl config envoy-proxy`
 
 ### NGINX Gateway Fabric vs Envoy Gateway
 
 | | NGINX Gateway Fabric | Envoy Gateway |
 |---|---|---|
 | Data plane | NGINX | Envoy |
-| Dónde crea el data plane | Namespace del `Gateway` | `envoy-gateway-system` |
-| Parámetros de la clase | `NginxProxy` | `EnvoyProxy` |
+| Where the data plane is created | The `Gateway`'s namespace | `envoy-gateway-system` |
+| Class parameters | `NginxProxy` | `EnvoyProxy` |
 | Rate limiting | `RateLimitPolicy` | `BackendTrafficPolicy.rateLimit` |
-| Autenticación | `AuthenticationFilter` | `SecurityPolicy` |
-| CLI de diagnóstico | — (`kubectl`, logs) | `egctl` |
+| Authentication | `AuthenticationFilter` | `SecurityPolicy` |
+| Troubleshooting CLI | — (`kubectl`, logs) | `egctl` |
 
-Lo **portable** entre ambos: `GatewayClass`, `Gateway`, `HTTPRoute`, `ReferenceGrant`, filtros
-estándar, `weight` y `timeouts`. Lo **no portable**: las políticas de cada implementación.
+**Portable** across both: `GatewayClass`, `Gateway`, `HTTPRoute`, `ReferenceGrant`, standard
+filters, `weight` and `timeouts`. **Not portable**: each implementation's policies.

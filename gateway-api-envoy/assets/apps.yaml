@@ -96,7 +96,7 @@ spec:
   selector: {app: api-v2}
   ports: [{name: http, port: 80, targetPort: 3000}]
 ---
-# Ingress "heredado" que vamos a migrar a Gateway API
+# "Legacy" Ingress that we will migrate to Gateway API
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
