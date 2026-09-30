@@ -1,0 +1,6 @@
+{
+  "items": [
+    { "path": "gateway-api-nginx-fabric" },
+    { "path": "gateway-api-envoy" }
+  ]
+}

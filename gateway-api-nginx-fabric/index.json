@@ -1,0 +1,32 @@
+{
+  "title": "Gateway API con NGINX Gateway Fabric",
+  "description": "Instala NGINX Gateway Fabric y domina Gateway API: Gateways compartidos, HTTPRoute, canary, filtros, TLS, rate limiting y troubleshooting (CKA/CKAD)",
+  "difficulty": "Intermediate",
+  "time": "45 minutes",
+  "details": {
+    "intro": {
+      "text": "intro.md",
+      "background": "setup/background.sh",
+      "foreground": "setup/foreground.sh"
+    },
+    "steps": [
+      { "title": "Instalar Gateway API y NGINX Gateway Fabric", "text": "step1/text.md", "verify": "step1/verify.sh" },
+      { "title": "Crear un Gateway compartido", "text": "step2/text.md", "verify": "step2/verify.sh" },
+      { "title": "HTTPRoute y allowedRoutes entre namespaces", "text": "step3/text.md", "verify": "step3/verify.sh" },
+      { "title": "Canary: pesos y match por header", "text": "step4/text.md", "verify": "step4/verify.sh" },
+      { "title": "Filtros: headers, rewrite y redirect", "text": "step5/text.md", "verify": "step5/verify.sh" },
+      { "title": "TLS y redirección HTTP a HTTPS", "text": "step6/text.md", "verify": "step6/verify.sh" },
+      { "title": "Rate limiting con RateLimitPolicy", "text": "step7/text.md", "verify": "step7/verify.sh" },
+      { "title": "Troubleshooting: ReferenceGrant y ResolvedRefs", "text": "step8/text.md", "verify": "step8/verify.sh", "background": "step8/background.sh" }
+    ],
+    "finish": { "text": "finish.md" },
+    "assets": {
+      "host01": [
+        { "file": "*", "target": "/root/assets" }
+      ]
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-1node"
+  }
+}
