@@ -1,8 +1,8 @@
 {
-  "title": "Gateway API with NGINX Gateway Fabric",
-  "description": "Install NGINX Gateway Fabric and master Gateway API: shared Gateways, HTTPRoute, canary, filters, TLS, rate limiting and troubleshooting (CKA/CKAD)",
+  "title": "Gateway API with NGINX Gateway Fabric - Part 1: Fundamentals",
+  "description": "Install NGINX Gateway Fabric and learn Gateway API basics: GatewayClass, shared Gateways, HTTPRoute, cross-namespace allowedRoutes and canary releases (CKA/CKAD)",
   "difficulty": "Intermediate",
-  "time": "45 minutes",
+  "time": "25 minutes",
   "details": {
     "intro": {
       "text": "intro.md",
@@ -29,27 +29,6 @@
         "title": "Canary: weights and header matching",
         "text": "step4/text.md",
         "verify": "step4/verify.sh"
-      },
-      {
-        "title": "Filters: headers, rewrite and redirect",
-        "text": "step5/text.md",
-        "verify": "step5/verify.sh"
-      },
-      {
-        "title": "TLS and HTTP to HTTPS redirect",
-        "text": "step6/text.md",
-        "verify": "step6/verify.sh"
-      },
-      {
-        "title": "Rate limiting with RateLimitPolicy",
-        "text": "step7/text.md",
-        "verify": "step7/verify.sh"
-      },
-      {
-        "title": "Troubleshooting: ReferenceGrant and ResolvedRefs",
-        "text": "step8/text.md",
-        "verify": "step8/verify.sh",
-        "background": "step8/background.sh"
       }
     ],
     "finish": {

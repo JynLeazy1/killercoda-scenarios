@@ -1,6 +1,8 @@
 {
   "items": [
-    { "path": "gateway-api-nginx-fabric" },
-    { "path": "gateway-api-envoy" }
+    { "path": "gateway-api-nginx-fabric-basics" },
+    { "path": "gateway-api-nginx-fabric-advanced" },
+    { "path": "gateway-api-envoy-basics" },
+    { "path": "gateway-api-envoy-advanced" }
   ]
 }

@@ -1,0 +1,27 @@
+{
+  "title": "Gateway API with Envoy Gateway - Part 2: Policies",
+  "description": "Continue with Envoy Gateway: HTTPRoute timeouts, BackendTrafficPolicy (retries, rate limiting), SecurityPolicy (basic auth) and troubleshooting with status and egctl (CKA/CKAD)",
+  "difficulty": "Intermediate",
+  "time": "20 minutes",
+  "details": {
+    "intro": {
+      "text": "intro.md",
+      "background": "setup/background.sh",
+      "foreground": "setup/foreground.sh"
+    },
+    "steps": [
+      { "title": "BackendTrafficPolicy: rate limit, timeouts and retries", "text": "step1/text.md", "verify": "step1/verify.sh" },
+      { "title": "SecurityPolicy: basic authentication", "text": "step2/text.md", "verify": "step2/verify.sh" },
+      { "title": "Troubleshooting with status and egctl", "text": "step3/text.md", "verify": "step3/verify.sh", "background": "step3/background.sh" }
+    ],
+    "finish": { "text": "finish.md" },
+    "assets": {
+      "host01": [
+        { "file": "*", "target": "/root/assets" }
+      ]
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-1node"
+  }
+}

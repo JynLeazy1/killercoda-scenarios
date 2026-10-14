@@ -1,4 +1,4 @@
-# Gateway API with Envoy Gateway
+# Gateway API with Envoy Gateway - Part 1: Fundamentals
 
 **Envoy Gateway** is the CNCF project that uses **Envoy Proxy** as the data plane to implement
 Gateway API. It is the foundation of many products (and other implementations such as Istio or
@@ -23,9 +23,9 @@ to Gateway API is a common task and an exam topic.
 2. Create a `Gateway` and an `HTTPRoute`
 3. Migrate an existing `Ingress` to `HTTPRoute` (by hand and with `ingress2gateway`)
 4. Shadow traffic with `RequestMirror`, then a *traffic split*
-5. Apply rate limiting, timeouts and retries with `BackendTrafficPolicy`
-6. Protect a route with basic authentication using `SecurityPolicy`
-7. Troubleshoot broken configuration with `status` and `egctl`
+
+**Part 2: Policies** starts from the state you leave here and covers timeouts, retries, rate
+limiting, authentication and troubleshooting with `egctl`.
 
 > While you read this, the apps `web`, `api` and `api-v2` and an `Ingress` named `shop` are being
 > deployed into the `apps` namespace.

@@ -1,8 +1,8 @@
 {
-  "title": "Gateway API with Envoy Gateway",
-  "description": "Install Envoy Gateway, migrate an Ingress to HTTPRoute and use mirroring, traffic splitting, rate limiting, retries, authentication and egctl (CKA/CKAD)",
+  "title": "Gateway API with Envoy Gateway - Part 1: Fundamentals",
+  "description": "Install Envoy Gateway, configure it with EnvoyProxy, migrate an Ingress to HTTPRoute (ingress2gateway) and roll out a new version with mirroring and traffic splitting (CKA/CKAD)",
   "difficulty": "Intermediate",
-  "time": "45 minutes",
+  "time": "25 minutes",
   "details": {
     "intro": {
       "text": "intro.md",
@@ -29,22 +29,6 @@
         "title": "Mirroring and traffic splitting",
         "text": "step4/text.md",
         "verify": "step4/verify.sh"
-      },
-      {
-        "title": "BackendTrafficPolicy: rate limit, timeouts and retries",
-        "text": "step5/text.md",
-        "verify": "step5/verify.sh"
-      },
-      {
-        "title": "SecurityPolicy: basic authentication",
-        "text": "step6/text.md",
-        "verify": "step6/verify.sh"
-      },
-      {
-        "title": "Troubleshooting with status and egctl",
-        "text": "step7/text.md",
-        "verify": "step7/verify.sh",
-        "background": "step7/background.sh"
       }
     ],
     "finish": {

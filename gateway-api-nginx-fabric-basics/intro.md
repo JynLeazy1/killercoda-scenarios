@@ -1,4 +1,4 @@
-# Gateway API with NGINX Gateway Fabric
+# Gateway API with NGINX Gateway Fabric - Part 1: Fundamentals
 
 **Gateway API** is the successor to `Ingress`, and it is now part of the **CKA** and **CKAD**
 curricula ("use the Gateway API to manage ingress traffic"). In this scenario you practice it with
@@ -19,10 +19,9 @@ curricula ("use the Gateway API to manage ingress traffic"). In this scenario yo
 2. Create a shared `Gateway` in the `infra` namespace
 3. Attach `HTTPRoute`s from the `cafe` namespace (`allowedRoutes`)
 4. Run a *canary* with weights and header matching
-5. Use filters: modify headers, rewrite URLs and redirect
-6. Terminate TLS and redirect HTTP → HTTPS
-7. Apply rate limiting with an NGF-specific policy
-8. Troubleshoot broken routes (`ReferenceGrant`, `ResolvedRefs`)
+
+**Part 2: Advanced** starts from the state you leave here and covers filters, TLS, rate limiting
+and troubleshooting.
 
 > While you read this, the sample apps `coffee-v1`, `coffee-v2` and `tea` are being deployed
 > into the `cafe` namespace.

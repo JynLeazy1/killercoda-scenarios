@@ -1,14 +1,9 @@
 # Scenario complete!
 
-You practiced the Gateway API topics that show up in CKA/CKAD:
+Across both parts you practiced the Gateway API topics that show up in CKA/CKAD. In this part:
 
-* Installing the CRDs (standard channel) and an implementation (NGINX Gateway Fabric)
-* `GatewayClass` → `Gateway` → `HTTPRoute` and the role-oriented model
-* `allowedRoutes` with a namespace selector, and `sectionName`
-* Path (`Exact`/`PathPrefix`) and header matching, rule precedence
-* Traffic splitting with `weight`
 * `RequestHeaderModifier`, `ResponseHeaderModifier`, `URLRewrite` and `RequestRedirect` filters
-* TLS termination and HTTP → HTTPS redirect
+* TLS termination, `sectionName` and HTTP → HTTPS redirect
 * Policy Attachment (`RateLimitPolicy`)
 * Troubleshooting with `status.conditions` and `ReferenceGrant`
 
@@ -20,5 +15,5 @@ kubectl get gateway,httproute -A
 kubectl describe httproute <name> -n <ns>                # Accepted / ResolvedRefs
 ```
 
-**Next:** the *Gateway API with Envoy Gateway* scenario covers migrating from `Ingress`,
+**Next:** the *Gateway API with Envoy Gateway* labs cover migrating from `Ingress`,
 `RequestMirror` and Envoy's policies (rate limit, retries, authentication).

@@ -1,5 +1,13 @@
 # Filters: headers, rewrite and redirect
 
+First, load the node IP into your shell (the setup saved it in `~/.bashrc`) and check that the
+routes from Part 1 respond:
+
+```bash
+source ~/.bashrc
+curl -s -H "Host: cafe.example" http://$NODE_IP:30080/tea | grep -E '"(path|pod)"'
+```{{exec}}
+
 **Filters** modify the request or the response within a rule. The standard-channel filters are:
 
 | Filter | What it does |

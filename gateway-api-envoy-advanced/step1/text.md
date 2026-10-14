@@ -1,5 +1,14 @@
 # BackendTrafficPolicy: rate limit, timeouts and retries
 
+First, load `NODE_IP` and `GW_PORT` into your shell (the setup saved them in `~/.bashrc`) and
+check that the `web` route from Part 1 responds:
+
+```bash
+source ~/.bashrc
+echo "Gateway at http://$NODE_IP:$GW_PORT"
+curl -s -H "Host: www.example" http://$NODE_IP:$GW_PORT/ | grep -E '"(host|pod)"'
+```{{exec}}
+
 ## 1. Timeouts (Gateway API standard)
 
 `HTTPRoute` supports per-rule `timeouts` with no extra CRDs. The test backend accepts

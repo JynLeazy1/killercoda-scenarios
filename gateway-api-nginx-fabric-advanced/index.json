@@ -1,0 +1,28 @@
+{
+  "title": "Gateway API with NGINX Gateway Fabric - Part 2: Advanced",
+  "description": "Continue with NGINX Gateway Fabric: HTTPRoute filters, TLS termination, HTTP to HTTPS redirect, RateLimitPolicy and troubleshooting with ReferenceGrant (CKA/CKAD)",
+  "difficulty": "Intermediate",
+  "time": "25 minutes",
+  "details": {
+    "intro": {
+      "text": "intro.md",
+      "background": "setup/background.sh",
+      "foreground": "setup/foreground.sh"
+    },
+    "steps": [
+      { "title": "Filters: headers, rewrite and redirect", "text": "step1/text.md", "verify": "step1/verify.sh" },
+      { "title": "TLS and HTTP to HTTPS redirect", "text": "step2/text.md", "verify": "step2/verify.sh" },
+      { "title": "Rate limiting with RateLimitPolicy", "text": "step3/text.md", "verify": "step3/verify.sh" },
+      { "title": "Troubleshooting: ReferenceGrant and ResolvedRefs", "text": "step4/text.md", "verify": "step4/verify.sh", "background": "step4/background.sh" }
+    ],
+    "finish": { "text": "finish.md" },
+    "assets": {
+      "host01": [
+        { "file": "*", "target": "/root/assets" }
+      ]
+    }
+  },
+  "backend": {
+    "imageid": "kubernetes-kubeadm-1node"
+  }
+}

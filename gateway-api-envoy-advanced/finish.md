@@ -1,11 +1,7 @@
 # Scenario complete!
 
-You practiced:
+In this part you practiced:
 
-* Installing Envoy Gateway and `parametersRef` → `EnvoyProxy`
-* `Gateway` and `HTTPRoute` with Envoy as the data plane
-* Migrating `Ingress` to `HTTPRoute` (by hand and with `ingress2gateway`)
-* `RequestMirror` (shadow traffic) and traffic splitting with `weight`
 * Standard `HTTPRoute` `timeouts`
 * `BackendTrafficPolicy`: retries and local rate limiting
 * `SecurityPolicy`: Basic Auth

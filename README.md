@@ -5,8 +5,13 @@ CKA / CKAD curricula that weren't covered by existing scenarios.
 
 | Scenario | Topics | Duration |
 |---|---|---|
-| [`gateway-api-nginx-fabric`](gateway-api-nginx-fabric) | Gateway API with NGINX Gateway Fabric v2.7.2: shared Gateway, `allowedRoutes`, `HTTPRoute`, canary, filters, TLS, `RateLimitPolicy`, `ReferenceGrant` | ~45 min |
-| [`gateway-api-envoy`](gateway-api-envoy) | Gateway API with Envoy Gateway v1.9.2: `EnvoyProxy`, Ingress migration (`ingress2gateway`), `RequestMirror`, timeouts, `BackendTrafficPolicy`, `SecurityPolicy`, `egctl` | ~45 min |
+| [`gateway-api-nginx-fabric-basics`](gateway-api-nginx-fabric-basics) | Part 1 — NGINX Gateway Fabric v2.7.2: install, `GatewayClass`, shared Gateway, `allowedRoutes`, `HTTPRoute`, canary | ~25 min |
+| [`gateway-api-nginx-fabric-advanced`](gateway-api-nginx-fabric-advanced) | Part 2 — filters, TLS and HTTPS redirect, `RateLimitPolicy`, troubleshooting with `ReferenceGrant` | ~25 min |
+| [`gateway-api-envoy-basics`](gateway-api-envoy-basics) | Part 1 — Envoy Gateway v1.9.2: install, `EnvoyProxy`, Ingress migration (`ingress2gateway`), `RequestMirror`, traffic splitting | ~25 min |
+| [`gateway-api-envoy-advanced`](gateway-api-envoy-advanced) | Part 2 — timeouts, `BackendTrafficPolicy` (retries, rate limit), `SecurityPolicy`, troubleshooting with `egctl` | ~20 min |
+
+Each *Part 2* lab rebuilds the end state of its *Part 1* in `setup/background.sh` (from the
+manifests in its `assets/`), so learners can start it directly without repeating work.
 
 ## Layout
 
@@ -17,7 +22,7 @@ CKA / CKAD curricula that weren't covered by existing scenarios.
 ├── setup/
 │   ├── background.sh   # deploys the sample apps during the intro
 │   └── foreground.sh   # waits until the environment is ready
-├── assets/             # manifests copied to /root/assets
+├── assets/             # manifests copied to /root/assets (Part 2: Part 1's end state)
 └── stepN/
     ├── text.md         # theory + task + collapsible solution
     ├── verify.sh       # "Check" button (exit 0 = passed)

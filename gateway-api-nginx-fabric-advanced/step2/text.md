@@ -55,7 +55,7 @@ kubectl wait -n infra gateway/cafe-gw --for=condition=Programmed --timeout=60s
 kubectl get svc cafe-gw-nginx -n infra
 ```{{exec}}
 
-The Service now also exposes `443:30443`, thanks to the `NginxProxy` you configured in step 1.
+The Service now also exposes `443:30443`, thanks to the `NginxProxy` NodePort mapping configured in Part 1.
 
 ### 3. `sectionName`: bind routes to a specific listener
 
